@@ -2,16 +2,19 @@ module Refinery
   module Resources
     include ActiveSupport::Configurable
 
-    config_accessor :dragonfly_insert_before, :dragonfly_secret, :dragonfly_url_format,
+    config_accessor :dragonfly_insert_before, :dragonfly_secret, :dragonfly_url_format, :dragonfly_url_host,
                     :max_file_size, :pages_per_dialog, :pages_per_admin_index,
                     :s3_backend, :s3_bucket_name, :s3_region,
                     :s3_access_key_id, :s3_secret_access_key,
-                    :datastore_root_path
+                    :datastore_root_path, :content_disposition,
+                    :custom_backend_class, :custom_backend_opts
 
     self.dragonfly_insert_before = 'ActionDispatch::Callbacks'
     self.dragonfly_secret = Refinery::Core.dragonfly_secret
     self.dragonfly_url_format = '/system/resources/:job/:basename.:format'
+    self.dragonfly_url_host = ''
 
+    self.content_disposition = :attachment
     self.max_file_size = 52428800
     self.pages_per_dialog = 12
     self.pages_per_admin_index = 20
@@ -28,19 +31,31 @@ module Refinery
       end
 
       def s3_bucket_name
-        config.s3_bucket_name.nil? ? Refinery::Core.s3_bucket_name : config.s3_bucket_name
+        config.s3_bucket_name.presence || Refinery::Core.s3_bucket_name
       end
 
       def s3_access_key_id
-        config.s3_access_key_id.nil? ? Refinery::Core.s3_access_key_id : config.s3_access_key_id
+        config.s3_access_key_id.presence || Refinery::Core.s3_access_key_id
       end
 
       def s3_secret_access_key
-        config.s3_secret_access_key.nil? ? Refinery::Core.s3_secret_access_key : config.s3_secret_access_key
+        config.s3_secret_access_key.presence || Refinery::Core.s3_secret_access_key
       end
 
       def s3_region
-        config.s3_region.nil? ? Refinery::Core.s3_region : config.s3_region
+        config.s3_region.presence || Refinery::Core.s3_region
+      end
+
+      def custom_backend
+        config.custom_backend_class.nil? ? Refinery::Core.custom_backend : config.custom_backend_class.present?
+      end
+
+      def custom_backend_class
+        config.custom_backend_class.nil? ? Refinery::Core.custom_backend_class : config.custom_backend_class.constantize
+      end
+
+      def custom_backend_opts
+        config.custom_backend_opts.nil? ? Refinery::Core.custom_backend_opts : config.custom_backend_opts
       end
 
     end

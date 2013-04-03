@@ -24,4 +24,9 @@ Refinery::Resources.configure do |config|
   # config.dragonfly_url_format = <%= Refinery::Resources.dragonfly_url_format.inspect %>
   # config.datastore_root_path = <%= Refinery::Resources.datastore_root_path.inspect %>
 
+  # Configure Dragonfly custom storage backend
+  # The custom_backend setting by default defers to the core setting for this but can be set just for resources.
+  # config.custom_backend_class = <%= Refinery::Resources.custom_backend_class.inspect %>
+  # config.custom_backend_opts = <%= Refinery::Resources.custom_backend_opts.inspect %>
+
 end
